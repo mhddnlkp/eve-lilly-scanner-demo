@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -37,6 +38,16 @@
       padding: 14px;
       margin-top: 12px;
       font-size: 16px;
+      cursor: pointer;
+    }
+
+    .success {
+      text-align: center;
+    }
+
+    .details {
+      margin-top: 15px;
+      line-height: 1.7;
     }
   </style>
 </head>
@@ -45,7 +56,7 @@
 
   <h2>Eve & Lilly Scanner Demo</h2>
 
-  <button onclick="startScanner()">Start Scanner</button>
+  <button onclick="startScanner()">START SCANNER</button>
 
   <div id="reader"></div>
 
@@ -53,10 +64,25 @@
     Waiting for barcode...
   </div>
 
+
   <script>
+
     let scanner;
 
+    let scannedProduct = null;
+
+    const backendUrl =
+      "https://script.google.com/macros/s/AKfycbwdyg1xMB1UJWdCAe8jJrlKYLd5RnmLF8NzUgKiGhU4szU1g8EdNmTww7c-hLB1Xd0p7A/exec";
+
+
+    // =========================
+    // START SCANNER
+    // =========================
+
     function startScanner() {
+
+      document.getElementById("result").innerHTML =
+        "Opening camera...";
 
       scanner = new Html5Qrcode("reader");
 
@@ -64,102 +90,253 @@
         .then(cameras => {
 
           if (!cameras || cameras.length === 0) {
+
             document.getElementById("result").innerHTML =
               "No camera found.";
+
             return;
           }
 
-          const cameraId = cameras[cameras.length - 1].id;
+          const cameraId =
+            cameras[cameras.length - 1].id;
 
           scanner.start(
             cameraId,
             {
               fps: 10,
+
               qrbox: {
                 width: 280,
                 height: 120
               }
             },
+
             onScanSuccess
           );
 
         })
+
         .catch(error => {
+
           document.getElementById("result").innerHTML =
             "Camera error: " + error;
+
         });
     }
 
+
+    // =========================
+    // BARCODE SCANNED
+    // =========================
+
     async function onScanSuccess(decodedText) {
 
-  scanner.stop();
+      await scanner.stop();
 
-  document.getElementById("result").innerHTML =
-    "Looking up product...";
+      document.getElementById("result").innerHTML =
+        "Looking up product...";
 
-  const backendUrl =
-    "https://script.google.com/macros/s/AKfycbwdyg1xMB1UJWdCAe8jJrlKYLd5RnmLF8NzUgKiGhU4szU1g8EdNmTww7c-hLB1Xd0p7A/exec";
+      try {
 
-  const response = await fetch(
-    backendUrl +
-    "?action=product&sku=" +
-    encodeURIComponent(decodedText)
-  );
+        const response = await fetch(
+          backendUrl +
+          "?action=product&sku=" +
+          encodeURIComponent(decodedText)
+        );
 
-  const product = await response.json();
+        const product =
+          await response.json();
 
-  if (product.found) {
+        if (!product.found) {
 
-    document.getElementById("result").innerHTML =
-      "<h3>" + product.category + "</h3>" +
-      "<p><strong>SKU:</strong> " + product.sku + "</p>" +
-      "<p><strong>Price:</strong> ₹" + product.price + "</p>" +
-      "<p><strong>Current Stock:</strong> " + product.currentStock + "</p>" +
-      "<button onclick='addToBill(\"" + product.sku + "\")'>ADD TO BILL</button>" +
-      "<button onclick='cancelProduct()'>CANCEL</button>";
+          document.getElementById("result").innerHTML =
+            "<p>Product not found.</p>" +
+            "<button onclick='startScanner()'>SCAN AGAIN</button>";
 
-  } else {
+          return;
+        }
 
-    document.getElementById("result").innerHTML =
-      "Product not found.";
-  }
-}
+        scannedProduct = product;
 
-async function addToBill(sku) {
+        document.getElementById("result").innerHTML =
 
-  const backendUrl =
-    "https://script.google.com/macros/s/AKfycbwdyg1xMB1UJWdCAe8jJrlKYLd5RnmLF8NzUgKiGhU4szU1g8EdNmTww7c-hLB1Xd0p7A/exec";
+          "<h3>" +
+          product.category +
+          "</h3>" +
 
-  document.getElementById("result").innerHTML +=
-    "<p>Adding to bill...</p>";
+          "<div class='details'>" +
 
-  const response = await fetch(
-    backendUrl +
-    "?action=addToBill&sku=" +
-    encodeURIComponent(sku)
-  );
+          "<p><strong>SKU:</strong> " +
+          product.sku +
+          "</p>" +
 
-  const result = await response.json();
+          "<p><strong>Price:</strong> ₹" +
+          product.price +
+          "</p>" +
 
-  if (result.success) {
+          "<p><strong>Current Stock:</strong> " +
+          product.currentStock +
+          "</p>" +
 
-    document.getElementById("result").innerHTML =
-      "<h3>Added to Bill ✅</h3>" +
-      "<p>" + result.category + "</p>" +
-      "<p>₹" + result.price + "</p>";
+          "</div>" +
 
-  } else {
+          "<button onclick='addToBill(\"" +
+          product.sku +
+          "\")'>ADD TO BILL</button>" +
 
-    document.getElementById("result").innerHTML =
-      "<p>Could not add product.</p>";
-  }
-}
+          "<button onclick='cancelProduct()'>" +
+          "CANCEL" +
+          "</button>";
 
-function cancelProduct() {
-  document.getElementById("result").innerHTML =
-    "Waiting for barcode...";
-}
+      } catch (error) {
+
+        document.getElementById("result").innerHTML =
+          "<p>Product lookup failed.</p>" +
+          "<p>" + error + "</p>";
+      }
+    }
+
+
+    // =========================
+    // ADD PRODUCT TO BILL
+    // =========================
+
+    async function addToBill(sku) {
+
+      document.getElementById("result").innerHTML =
+        "<p>Adding to bill...</p>";
+
+      try {
+
+        // Add product
+        const addResponse = await fetch(
+          backendUrl +
+          "?action=addToBill&sku=" +
+          encodeURIComponent(sku)
+        );
+
+        const addResult =
+          await addResponse.json();
+
+        if (!addResult.success) {
+
+          document.getElementById("result").innerHTML =
+
+            "<p><strong>Could not add product.</strong></p>" +
+
+            "<p>" +
+            (addResult.message || "Unknown error") +
+            "</p>" +
+
+            "<button onclick='startScanner()'>" +
+            "SCAN NEXT" +
+            "</button>";
+
+          return;
+        }
+
+
+        // Get current bill to find actual quantity
+        const billResponse = await fetch(
+          backendUrl +
+          "?action=currentBill"
+        );
+
+        const bill =
+          await billResponse.json();
+
+        let quantityInBill = 1;
+
+        if (bill.success && bill.items) {
+
+          const billItem =
+            bill.items.find(item =>
+              String(item.sku).toUpperCase() ===
+              String(sku).toUpperCase()
+            );
+
+          if (billItem) {
+            quantityInBill =
+              billItem.quantity;
+          }
+        }
+
+
+        // Display final confirmation
+        document.getElementById("result").innerHTML =
+
+          "<div class='success'>" +
+
+          "<h3>Added to Bill ✅</h3>" +
+
+          "</div>" +
+
+          "<div class='details'>" +
+
+          "<p><strong>Product:</strong> " +
+          addResult.category +
+          "</p>" +
+
+          "<p><strong>SKU:</strong> " +
+          addResult.sku +
+          "</p>" +
+
+          "<p><strong>Price:</strong> ₹" +
+          addResult.price +
+          "</p>" +
+
+          "<p><strong>Quantity in Bill:</strong> " +
+          quantityInBill +
+          "</p>" +
+
+          "<p><strong>Current Stock:</strong> " +
+          (
+            scannedProduct
+              ? scannedProduct.currentStock
+              : "-"
+          ) +
+          "</p>" +
+
+          "</div>" +
+
+          "<button onclick='startScanner()'>" +
+          "SCAN NEXT PRODUCT" +
+          "</button>";
+
+      } catch (error) {
+
+        document.getElementById("result").innerHTML =
+
+          "<p>Could not connect to billing system.</p>" +
+
+          "<p>" +
+          error +
+          "</p>" +
+
+          "<button onclick='startScanner()'>" +
+          "TRY AGAIN" +
+          "</button>";
+      }
+    }
+
+
+    // =========================
+    // CANCEL PRODUCT
+    // =========================
+
+    function cancelProduct() {
+
+      scannedProduct = null;
+
+      document.getElementById("result").innerHTML =
+        "Waiting for barcode..." +
+        "<button onclick='startScanner()'>" +
+        "START SCANNER" +
+        "</button>";
+    }
+
   </script>
 
 </body>
+
 </html>

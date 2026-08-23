@@ -90,13 +90,49 @@
         });
     }
 
-    function onScanSuccess(decodedText) {
+    async function onScanSuccess(decodedText) {
 
-      scanner.stop();
+  scanner.stop();
 
-      document.getElementById("result").innerHTML =
-        "<strong>Scanned SKU:</strong><br><br>" + decodedText;
-    }
+  document.getElementById("result").innerHTML =
+    "Looking up product...";
+
+  const backendUrl =
+    "https://script.google.com/macros/s/AKfycbwdyg1xMB1UJWdCAe8jJrlKYLd5RnmLF8NzUgKiGhU4szU1g8EdNmTww7c-hLB1Xd0p7A/exec";
+
+  const response = await fetch(
+    backendUrl +
+    "?action=product&sku=" +
+    encodeURIComponent(decodedText)
+  );
+
+  const product = await response.json();
+
+  if (product.found) {
+
+    document.getElementById("result").innerHTML =
+      "<h3>" + product.category + "</h3>" +
+      "<p><strong>SKU:</strong> " + product.sku + "</p>" +
+      "<p><strong>Price:</strong> ₹" + product.price + "</p>" +
+      "<p><strong>Current Stock:</strong> " + product.currentStock + "</p>" +
+      "<button onclick='addToBill(\"" + product.sku + "\")'>ADD TO BILL</button>" +
+      "<button onclick='cancelProduct()'>CANCEL</button>";
+
+  } else {
+
+    document.getElementById("result").innerHTML =
+      "Product not found.";
+  }
+}
+
+function addToBill(sku) {
+  alert("Add to Bill will be connected next. SKU: " + sku);
+}
+
+function cancelProduct() {
+  document.getElementById("result").innerHTML =
+    "Waiting for barcode...";
+}
   </script>
 
 </body>

@@ -1,1 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+  <title>Eve & Lilly Scanner</title>
+
+  <script src="https://unpkg.com/html5-qrcode"></script>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 500px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    h2 {
+      text-align: center;
+    }
+
+    #reader {
+      width: 100%;
+      margin-top: 20px;
+    }
+
+    #result {
+      margin-top: 20px;
+      padding: 15px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      margin-top: 12px;
+      font-size: 16px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <h2>Eve & Lilly Scanner Demo</h2>
+
+  <button onclick="startScanner()">Start Scanner</button>
+
+  <div id="reader"></div>
+
+  <div id="result">
+    Waiting for barcode...
+  </div>
+
+  <script>
+    let scanner;
+
+    function startScanner() {
+
+      scanner = new Html5Qrcode("reader");
+
+      Html5Qrcode.getCameras()
+        .then(cameras => {
+
+          if (!cameras || cameras.length === 0) {
+            document.getElementById("result").innerHTML =
+              "No camera found.";
+            return;
+          }
+
+          const cameraId = cameras[cameras.length - 1].id;
+
+          scanner.start(
+            cameraId,
+            {
+              fps: 10,
+              qrbox: {
+                width: 280,
+                height: 120
+              }
+            },
+            onScanSuccess
+          );
+
+        })
+        .catch(error => {
+          document.getElementById("result").innerHTML =
+            "Camera error: " + error;
+        });
+    }
+
+    function onScanSuccess(decodedText) {
+
+      scanner.stop();
+
+      document.getElementById("result").innerHTML =
+        "<strong>Scanned SKU:</strong><br><br>" + decodedText;
+    }
+  </script>
+
+</body>
+</html>

@@ -125,8 +125,34 @@
   }
 }
 
-function addToBill(sku) {
-  alert("Add to Bill will be connected next. SKU: " + sku);
+async function addToBill(sku) {
+
+  const backendUrl =
+    "https://script.google.com/macros/s/AKfycbwdyg1xMB1UJWdCAe8jJrlKYLd5RnmLF8NzUgKiGhU4szU1g8EdNmTww7c-hLB1Xd0p7A/exec";
+
+  document.getElementById("result").innerHTML +=
+    "<p>Adding to bill...</p>";
+
+  const response = await fetch(
+    backendUrl +
+    "?action=addToBill&sku=" +
+    encodeURIComponent(sku)
+  );
+
+  const result = await response.json();
+
+  if (result.success) {
+
+    document.getElementById("result").innerHTML =
+      "<h3>Added to Bill ✅</h3>" +
+      "<p>" + result.category + "</p>" +
+      "<p>₹" + result.price + "</p>";
+
+  } else {
+
+    document.getElementById("result").innerHTML =
+      "<p>Could not add product.</p>";
+  }
 }
 
 function cancelProduct() {

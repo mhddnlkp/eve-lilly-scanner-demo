@@ -1,342 +1,560 @@
 <!DOCTYPE html>
 <html>
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <title>Eve & Lilly Scanner</title>
-
+  <title>Eve & Lilly Staff</title>
   <script src="https://unpkg.com/html5-qrcode"></script>
 
   <style>
+    * { box-sizing: border-box; }
     body {
       font-family: Arial, sans-serif;
-      max-width: 500px;
+      max-width: 520px;
       margin: 0 auto;
-      padding: 20px;
+      padding: 18px;
+      background: #f7f7f7;
+      color: #222;
     }
-
-    h2 {
-      text-align: center;
+    h1, h2, h3 { margin-top: 0; }
+    h1 { text-align: center; font-size: 25px; }
+    .card {
+      background: #fff;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 14px;
+      box-shadow: 0 2px 10px rgba(0,0,0,.06);
     }
-
-    #reader {
-      width: 100%;
-      margin-top: 20px;
-    }
-
-    #result {
-      margin-top: 20px;
-      padding: 15px;
-      border: 1px solid #ddd;
-      border-radius: 8px;
-    }
-
+    .hidden { display: none !important; }
     button {
       width: 100%;
-      padding: 14px;
-      margin-top: 12px;
+      padding: 15px;
+      margin-top: 10px;
       font-size: 16px;
+      font-weight: bold;
+      border: 0;
+      border-radius: 9px;
       cursor: pointer;
     }
-
-    .success {
+    .primary { background: #222; color: #fff; }
+    .green { background: #17743b; color: #fff; }
+    .light { background: #e9e9e9; color: #222; }
+    .danger { background: #9d3128; color: #fff; }
+    input {
+      width: 100%;
+      padding: 13px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 16px;
+      margin-top: 7px;
+      margin-bottom: 8px;
+    }
+    label { font-weight: bold; font-size: 14px; }
+    #reader { width: 100%; margin-top: 14px; }
+    #message {
+      min-height: 22px;
+      margin-bottom: 12px;
+      font-weight: bold;
+    }
+    .menu button { margin-top: 12px; min-height: 58px; }
+    .product {
       text-align: center;
     }
-
-    .details {
-      margin-top: 15px;
-      line-height: 1.7;
+    .product img {
+      width: 150px;
+      height: 150px;
+      object-fit: cover;
+      background: #eee;
+      border-radius: 10px;
+      margin-bottom: 10px;
+    }
+    .price {
+      font-size: 28px;
+      font-weight: bold;
+      margin: 10px 0;
+    }
+    .meta { line-height: 1.7; text-align: left; }
+    .cart-option {
+      width: 100%;
+      text-align: left;
+      background: #fff;
+      border: 1px solid #ddd;
+      padding: 13px;
+      border-radius: 9px;
+      margin-top: 9px;
+    }
+    .cart-option strong { display: block; font-size: 16px; }
+    .small { font-size: 12px; color: #666; margin-top: 4px; }
+    .cart-item {
+      border-bottom: 1px solid #eee;
+      padding: 10px 0;
+    }
+    .subtotal {
+      font-size: 22px;
+      font-weight: bold;
+      margin-top: 14px;
+      text-align: right;
+    }
+    .top-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
     }
   </style>
 </head>
 
 <body>
 
-  <h2>Eve & Lilly Scanner Demo</h2>
+<h1>Eve & Lilly Staff</h1>
+<div id="message"></div>
 
-  <button onclick="startScanner()">START SCANNER</button>
+<section id="loginScreen" class="card">
+  <h2>Staff Login</h2>
+  <label>Staff Name / ID</label>
+  <input id="staffId" placeholder="Example: STAFF 01">
+  <button class="primary" onclick="loginStaff()">LOGIN</button>
+</section>
 
-  <div id="reader"></div>
-
-  <div id="result">
-    Waiting for barcode...
+<section id="homeScreen" class="card hidden">
+  <h2 id="welcomeText">Staff Home</h2>
+  <div class="menu">
+    <button class="primary" onclick="openPriceScanner()">PRICE SCANNER</button>
+    <button class="green" onclick="showCreateCart()">OPEN NEW CART</button>
+    <button class="light" onclick="showJoinCart()">JOIN EXISTING CART</button>
   </div>
+  <button class="danger" onclick="logoutStaff()">LOGOUT</button>
+</section>
 
+<section id="createCartScreen" class="card hidden">
+  <h2>Open New Cart</h2>
+  <label>Customer Name</label>
+  <input id="customerName" placeholder="Customer name">
+  <label>Mobile Number</label>
+  <input id="mobileNumber" placeholder="Optional">
+  <button class="green" onclick="createCart()">CREATE & OPEN CART</button>
+  <button class="light" onclick="goHome()">BACK</button>
+</section>
 
-  <script>
+<section id="joinCartScreen" class="card hidden">
+  <h2>Active Carts</h2>
+  <div id="activeCarts">Loading...</div>
+  <button class="light" onclick="goHome()">BACK</button>
+</section>
 
-    let scanner;
+<section id="scannerScreen" class="card hidden">
+  <h2 id="scannerTitle">Scanner</h2>
+  <div id="scannerContext" class="small"></div>
+  <button id="startScannerButton" class="primary" onclick="startScanner()">START SCANNER</button>
+  <div id="reader"></div>
+  <button class="light" onclick="exitScanner()">BACK</button>
+</section>
 
-    let scannedProduct = null;
+<section id="productScreen" class="card hidden">
+  <div id="productResult"></div>
+</section>
 
-    const backendUrl =
-      "https://script.google.com/macros/s/AKfycbwdyg1xMB1UJWdCAe8jJrlKYLd5RnmLF8NzUgKiGhU4szU1g8EdNmTww7c-hLB1Xd0p7A/exec";
+<section id="cartSelectScreen" class="card hidden">
+  <h2>Add to Which Cart?</h2>
+  <div id="cartChoices">Loading...</div>
+  <button class="light" onclick="cancelCartSelection()">CANCEL</button>
+</section>
 
+<section id="cartScreen" class="card hidden">
+  <h2 id="cartHeading">Customer Cart</h2>
+  <div id="cartInfo" class="small"></div>
+  <div class="top-actions">
+    <button class="primary" onclick="openInsideCartScanner()">SCAN PRODUCT</button>
+    <button class="light" onclick="goHome()">HOME</button>
+  </div>
+  <div id="cartItems"></div>
+  <div id="cartSubtotal" class="subtotal"></div>
+</section>
 
-    // =========================
-    // START SCANNER
-    // =========================
+<script>
+const backendUrl =
+  "https://script.google.com/macros/s/AKfycbwdyg1xMB1UJWdCAe8jJrlKYLd5RnmLF8NzUgKiGhU4szU1g8EdNmTww7c-hLB1Xd0p7A/exec";
 
-    function startScanner() {
+let loggedStaff = "";
+let scanner = null;
+let scannerMode = "PRICE";
+let currentCartId = "";
+let scannedProduct = null;
+let returnScreen = "homeScreen";
 
-      document.getElementById("result").innerHTML =
-        "Opening camera...";
+function showOnly(id) {
+  [
+    "loginScreen", "homeScreen", "createCartScreen",
+    "joinCartScreen", "scannerScreen", "productScreen",
+    "cartSelectScreen", "cartScreen"
+  ].forEach(x => document.getElementById(x).classList.add("hidden"));
+  document.getElementById(id).classList.remove("hidden");
+}
 
-      scanner = new Html5Qrcode("reader");
+function message(text, error=false) {
+  const box = document.getElementById("message");
+  box.textContent = text || "";
+  box.style.color = error ? "red" : "#17743b";
+}
 
-      Html5Qrcode.getCameras()
-        .then(cameras => {
+function loginStaff() {
+  const id = document.getElementById("staffId").value.trim();
+  if (!id) return message("Enter Staff Name / ID.", true);
+  loggedStaff = id;
+  document.getElementById("welcomeText").textContent = "Welcome, " + loggedStaff;
+  message("");
+  showOnly("homeScreen");
+}
 
-          if (!cameras || cameras.length === 0) {
+function logoutStaff() {
+  loggedStaff = "";
+  currentCartId = "";
+  scannedProduct = null;
+  document.getElementById("staffId").value = "";
+  showOnly("loginScreen");
+}
 
-            document.getElementById("result").innerHTML =
-              "No camera found.";
+function goHome() {
+  stopScannerQuietly();
+  currentCartId = "";
+  message("");
+  showOnly("homeScreen");
+}
 
-            return;
-          }
+function showCreateCart() {
+  showOnly("createCartScreen");
+}
 
-          const cameraId =
-            cameras[cameras.length - 1].id;
+async function createCart() {
+  const customerName = document.getElementById("customerName").value.trim();
+  const mobileNumber = document.getElementById("mobileNumber").value.trim();
 
-          scanner.start(
-            cameraId,
-            {
-              fps: 10,
+  if (!customerName) return message("Customer Name is required.", true);
 
-              qrbox: {
-                width: 280,
-                height: 120
-              }
-            },
+  message("Creating cart...");
 
-            onScanSuccess
-          );
+  try {
+    const data = await api({
+      action: "retailCreateCart",
+      customerName,
+      mobileNumber,
+      staff: loggedStaff
+    });
 
-        })
+    if (!data.success) throw new Error(data.message || "Could not create cart.");
 
-        .catch(error => {
+    document.getElementById("customerName").value = "";
+    document.getElementById("mobileNumber").value = "";
+    currentCartId = data.cartId;
+    await openCart(currentCartId);
+    message("Cart created.");
+  } catch (e) {
+    message(e.message, true);
+  }
+}
 
-          document.getElementById("result").innerHTML =
-            "Camera error: " + error;
+async function showJoinCart() {
+  showOnly("joinCartScreen");
+  document.getElementById("activeCarts").innerHTML = "Loading active carts...";
 
-        });
+  try {
+    const data = await api({ action: "retailActiveCarts" });
+    if (!data.success) throw new Error(data.message || "Could not load carts.");
+    renderActiveCarts(data.carts || [], "activeCarts", openCart);
+  } catch (e) {
+    document.getElementById("activeCarts").textContent = e.message;
+  }
+}
+
+function renderActiveCarts(carts, targetId, clickHandler) {
+  const box = document.getElementById(targetId);
+  box.innerHTML = "";
+
+  if (!carts.length) {
+    box.innerHTML = "<p>No active carts.</p>";
+    return;
+  }
+
+  carts.forEach(cart => {
+    const btn = document.createElement("button");
+    btn.className = "cart-option";
+    btn.innerHTML =
+      "<strong>" + esc(cart.customerName || "Walk-in Customer") + "</strong>" +
+      "<div class='small'>" +
+      esc(cart.cartId) + " · Created By: " + esc(cart.createdBy) +
+      " · ₹" + Number(cart.subtotal || 0) +
+      "</div>";
+    btn.onclick = () => clickHandler(cart.cartId);
+    box.appendChild(btn);
+  });
+}
+
+async function openCart(cartId) {
+  message("Opening cart...");
+  try {
+    const data = await api({ action: "retailCart", cartId });
+    if (!data.success) throw new Error(data.message || "Could not open cart.");
+
+    currentCartId = data.cart.cartId;
+    showOnly("cartScreen");
+
+    document.getElementById("cartHeading").textContent =
+      data.cart.customerName || "Customer Cart";
+
+    document.getElementById("cartInfo").textContent =
+      "Cart: " + data.cart.cartId +
+      " | Created By: " + data.cart.createdBy;
+
+    renderCartItems(data);
+    message("");
+  } catch (e) {
+    message(e.message, true);
+  }
+}
+
+function renderCartItems(data) {
+  const box = document.getElementById("cartItems");
+  box.innerHTML = "";
+
+  const items = data.items || [];
+  if (!items.length) {
+    box.innerHTML = "<p>No products added yet.</p>";
+  } else {
+    items.forEach(item => {
+      const div = document.createElement("div");
+      div.className = "cart-item";
+      div.innerHTML =
+        "<strong>" + esc(item.productName) + "</strong>" +
+        "<div class='small'>" +
+        esc(item.sku) +
+        " · Qty: " + Number(item.quantity) +
+        " · Added By: " + esc(item.addedBy) +
+        "</div>" +
+        "<div>₹" + Number(item.lineTotal || 0) + "</div>";
+      box.appendChild(div);
+    });
+  }
+
+  document.getElementById("cartSubtotal").textContent =
+    "Subtotal: ₹" + Number(data.cart.subtotal || 0);
+}
+
+function openPriceScanner() {
+  scannerMode = "PRICE";
+  currentCartId = "";
+  returnScreen = "homeScreen";
+  document.getElementById("scannerTitle").textContent = "Price Scanner";
+  document.getElementById("scannerContext").textContent =
+    "Scan to check price. Nothing is added automatically.";
+  showOnly("scannerScreen");
+}
+
+function openInsideCartScanner() {
+  if (!currentCartId) return message("No cart is open.", true);
+  scannerMode = "CART";
+  returnScreen = "cartScreen";
+  document.getElementById("scannerTitle").textContent = "Cart Scanner";
+  document.getElementById("scannerContext").textContent =
+    "Scan to check price, then choose ADD TO CART or CANCEL.";
+  showOnly("scannerScreen");
+}
+
+async function startScanner() {
+  message("Opening camera...");
+  document.getElementById("startScannerButton").disabled = true;
+
+  try {
+    if (scanner) {
+      try { await scanner.clear(); } catch (_) {}
     }
 
+    scanner = new Html5Qrcode("reader");
+    const cameras = await Html5Qrcode.getCameras();
 
-    // =========================
-    // BARCODE SCANNED
-    // =========================
+    if (!cameras || !cameras.length) throw new Error("No camera found.");
 
-    async function onScanSuccess(decodedText) {
+    const cameraId = cameras[cameras.length - 1].id;
 
-      await scanner.stop();
+    await scanner.start(
+      cameraId,
+      { fps: 10, qrbox: { width: 280, height: 120 } },
+      onScanSuccess
+    );
 
-      document.getElementById("result").innerHTML =
-        "Looking up product...";
+    message("");
+  } catch (e) {
+    document.getElementById("startScannerButton").disabled = false;
+    message("Camera error: " + e.message, true);
+  }
+}
 
-      try {
+async function onScanSuccess(decodedText) {
+  await stopScannerQuietly();
+  message("Looking up product...");
 
-        const response = await fetch(
-          backendUrl +
-          "?action=product&sku=" +
-          encodeURIComponent(decodedText)
-        );
+  try {
+    const data = await api({
+      action: "retailProduct",
+      identifier: decodedText
+    });
 
-        const product =
-          await response.json();
-
-        if (!product.found) {
-
-          document.getElementById("result").innerHTML =
-            "<p>Product not found.</p>" +
-            "<button onclick='startScanner()'>SCAN AGAIN</button>";
-
-          return;
-        }
-
-        scannedProduct = product;
-
-        document.getElementById("result").innerHTML =
-
-          "<h3>" +
-          product.category +
-          "</h3>" +
-
-          "<div class='details'>" +
-
-          "<p><strong>SKU:</strong> " +
-          product.sku +
-          "</p>" +
-
-          "<p><strong>Price:</strong> ₹" +
-          product.price +
-          "</p>" +
-
-          "<p><strong>Current Stock:</strong> " +
-          product.currentStock +
-          "</p>" +
-
-          "</div>" +
-
-          "<button onclick='addToBill(\"" +
-          product.sku +
-          "\")'>ADD TO BILL</button>" +
-
-          "<button onclick='cancelProduct()'>" +
-          "CANCEL" +
-          "</button>";
-
-      } catch (error) {
-
-        document.getElementById("result").innerHTML =
-          "<p>Product lookup failed.</p>" +
-          "<p>" + error + "</p>";
-      }
+    if (!data.success || !data.found) {
+      throw new Error(data.message || "Product not found.");
     }
 
+    scannedProduct = data.product;
+    showProduct(scannedProduct);
+    message("");
+  } catch (e) {
+    message(e.message, true);
+    showOnly("scannerScreen");
+  }
+}
 
-    // =========================
-    // ADD PRODUCT TO BILL
-    // =========================
+function showProduct(product) {
+  showOnly("productScreen");
 
-    async function addToBill(sku) {
+  let image = "";
+  if (product.imageReference) {
+    image =
+      "<img src='https://drive.google.com/thumbnail?id=" +
+      encodeURIComponent(product.imageReference) +
+      "&sz=w400' alt='Product'>";
+  }
 
-      document.getElementById("result").innerHTML =
-        "<p>Adding to bill...</p>";
+  document.getElementById("productResult").innerHTML =
+    "<div class='product'>" +
+    image +
+    "<h2>" + esc(product.productName || product.category || "Product") + "</h2>" +
+    "<div class='price'>₹" + Number(product.rp || 0) + "</div>" +
+    "<div class='meta'>" +
+    "<p><strong>SKU:</strong> " + esc(product.sku) + "</p>" +
+    "<p><strong>Stock:</strong> " + Number(product.currentStock || 0) + "</p>" +
+    "</div>" +
+    "<button class='green' onclick='productAddDecision()'>ADD TO CART</button>" +
+    "<button class='light' onclick='cancelScannedProduct()'>CANCEL</button>" +
+    "</div>";
+}
 
-      try {
+async function productAddDecision() {
+  if (!scannedProduct) return;
 
-        // Add product
-        const addResponse = await fetch(
-          backendUrl +
-          "?action=addToBill&sku=" +
-          encodeURIComponent(sku)
-        );
+  if (scannerMode === "CART") {
+    await addProductToCart(currentCartId);
+    return;
+  }
 
-        const addResult =
-          await addResponse.json();
+  showOnly("cartSelectScreen");
+  document.getElementById("cartChoices").innerHTML = "Loading active carts...";
 
-        if (!addResult.success) {
+  try {
+    const data = await api({ action: "retailActiveCarts" });
+    if (!data.success) throw new Error(data.message || "Could not load carts.");
+    renderActiveCarts(data.carts || [], "cartChoices", addProductToCart);
+  } catch (e) {
+    document.getElementById("cartChoices").textContent = e.message;
+  }
+}
 
-          document.getElementById("result").innerHTML =
+async function addProductToCart(cartId) {
+  if (!scannedProduct) return;
 
-            "<p><strong>Could not add product.</strong></p>" +
+  message("Adding product...");
 
-            "<p>" +
-            (addResult.message || "Unknown error") +
-            "</p>" +
+  try {
+    const data = await api({
+      action: "retailAddItem",
+      cartId,
+      identifier: scannedProduct.sku,
+      quantity: 1,
+      staff: loggedStaff
+    });
 
-            "<button onclick='startScanner()'>" +
-            "SCAN NEXT" +
-            "</button>";
+    if (!data.success) throw new Error(data.message || "Could not add product.");
 
-          return;
-        }
+    const addedName = scannedProduct.productName || scannedProduct.sku;
+    scannedProduct = null;
+    currentCartId = cartId;
 
+    message(addedName + " added to cart.");
 
-        // Get current bill to find actual quantity
-        const billResponse = await fetch(
-          backendUrl +
-          "?action=currentBill"
-        );
-
-        const bill =
-          await billResponse.json();
-
-        let quantityInBill = 1;
-
-        if (bill.success && bill.items) {
-
-          const billItem =
-            bill.items.find(item =>
-              String(item.sku).toUpperCase() ===
-              String(sku).toUpperCase()
-            );
-
-          if (billItem) {
-            quantityInBill =
-              billItem.quantity;
-          }
-        }
-
-
-        // Display final confirmation
-        document.getElementById("result").innerHTML =
-
-          "<div class='success'>" +
-
-          "<h3>Added to Bill ✅</h3>" +
-
-          "</div>" +
-
-          "<div class='details'>" +
-
-          "<p><strong>Product:</strong> " +
-          addResult.category +
-          "</p>" +
-
-          "<p><strong>SKU:</strong> " +
-          addResult.sku +
-          "</p>" +
-
-          "<p><strong>Price:</strong> ₹" +
-          addResult.price +
-          "</p>" +
-
-          "<p><strong>Quantity in Bill:</strong> " +
-          quantityInBill +
-          "</p>" +
-
-          "<p><strong>Current Stock:</strong> " +
-          (
-            scannedProduct
-              ? scannedProduct.currentStock
-              : "-"
-          ) +
-          "</p>" +
-
-          "</div>" +
-
-          "<button onclick='startScanner()'>" +
-          "SCAN NEXT PRODUCT" +
-          "</button>";
-
-      } catch (error) {
-
-        document.getElementById("result").innerHTML =
-
-          "<p>Could not connect to billing system.</p>" +
-
-          "<p>" +
-          error +
-          "</p>" +
-
-          "<button onclick='startScanner()'>" +
-          "TRY AGAIN" +
-          "</button>";
-      }
+    if (scannerMode === "CART") {
+      await openCart(cartId);
+    } else {
+      showOnly("homeScreen");
     }
+  } catch (e) {
+    message(e.message, true);
+  }
+}
 
+function cancelScannedProduct() {
+  scannedProduct = null;
 
-    // =========================
-    // CANCEL PRODUCT
-    // =========================
+  if (scannerMode === "CART") {
+    openCart(currentCartId);
+  } else {
+    showOnly("homeScreen");
+  }
+}
 
-    function cancelProduct() {
+function cancelCartSelection() {
+  if (scannedProduct) {
+    showProduct(scannedProduct);
+  } else {
+    showOnly("homeScreen");
+  }
+}
 
-      scannedProduct = null;
+async function exitScanner() {
+  await stopScannerQuietly();
 
-      document.getElementById("result").innerHTML =
-        "Waiting for barcode..." +
-        "<button onclick='startScanner()'>" +
-        "START SCANNER" +
-        "</button>";
-    }
+  if (returnScreen === "cartScreen" && currentCartId) {
+    openCart(currentCartId);
+  } else {
+    showOnly("homeScreen");
+  }
+}
 
-  </script>
+async function stopScannerQuietly() {
+  if (!scanner) {
+    document.getElementById("startScannerButton").disabled = false;
+    return;
+  }
+
+  try {
+    if (scanner.isScanning) await scanner.stop();
+  } catch (_) {}
+
+  try { await scanner.clear(); } catch (_) {}
+
+  scanner = null;
+  document.getElementById("reader").innerHTML = "";
+  document.getElementById("startScannerButton").disabled = false;
+}
+
+async function api(params) {
+  const query = new URLSearchParams(params);
+  const response = await fetch(backendUrl + "?" + query.toString(), {
+    method: "GET",
+    cache: "no-store"
+  });
+
+  if (!response.ok) {
+    throw new Error("Backend connection failed.");
+  }
+
+  return response.json();
+}
+
+function esc(value) {
+  return String(value == null ? "" : value)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+</script>
 
 </body>
-
 </html>

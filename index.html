@@ -4,10 +4,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Eve & Lilly Staff</title>
+
   <script src="https://unpkg.com/html5-qrcode"></script>
 
   <style>
     * { box-sizing: border-box; }
+
     body {
       font-family: Arial, sans-serif;
       max-width: 520px;
@@ -16,8 +18,14 @@
       background: #f7f7f7;
       color: #222;
     }
+
     h1, h2, h3 { margin-top: 0; }
-    h1 { text-align: center; font-size: 25px; }
+
+    h1 {
+      text-align: center;
+      font-size: 25px;
+    }
+
     .card {
       background: #fff;
       border-radius: 12px;
@@ -25,7 +33,9 @@
       margin-bottom: 14px;
       box-shadow: 0 2px 10px rgba(0,0,0,.06);
     }
+
     .hidden { display: none !important; }
+
     button {
       width: 100%;
       padding: 15px;
@@ -36,10 +46,11 @@
       border-radius: 9px;
       cursor: pointer;
     }
+
     .primary { background: #222; color: #fff; }
     .green { background: #17743b; color: #fff; }
     .light { background: #e9e9e9; color: #222; }
-    .danger { background: #9d3128; color: #fff; }
+
     input {
       width: 100%;
       padding: 13px;
@@ -49,17 +60,32 @@
       margin-top: 7px;
       margin-bottom: 8px;
     }
-    label { font-weight: bold; font-size: 14px; }
-    #reader { width: 100%; margin-top: 14px; }
+
+    label {
+      font-weight: bold;
+      font-size: 14px;
+    }
+
+    #reader {
+      width: 100%;
+      margin-top: 14px;
+    }
+
     #message {
       min-height: 22px;
       margin-bottom: 12px;
       font-weight: bold;
     }
-    .menu button { margin-top: 12px; min-height: 58px; }
+
+    .menu button {
+      margin-top: 12px;
+      min-height: 58px;
+    }
+
     .product {
       text-align: center;
     }
+
     .product img {
       width: 150px;
       height: 150px;
@@ -68,12 +94,18 @@
       border-radius: 10px;
       margin-bottom: 10px;
     }
+
     .price {
       font-size: 28px;
       font-weight: bold;
       margin: 10px 0;
     }
-    .meta { line-height: 1.7; text-align: left; }
+
+    .meta {
+      line-height: 1.7;
+      text-align: left;
+    }
+
     .cart-option {
       width: 100%;
       text-align: left;
@@ -83,18 +115,30 @@
       border-radius: 9px;
       margin-top: 9px;
     }
-    .cart-option strong { display: block; font-size: 16px; }
-    .small { font-size: 12px; color: #666; margin-top: 4px; }
+
+    .cart-option strong {
+      display: block;
+      font-size: 16px;
+    }
+
+    .small {
+      font-size: 12px;
+      color: #666;
+      margin-top: 4px;
+    }
+
     .cart-item {
       border-bottom: 1px solid #eee;
       padding: 10px 0;
     }
+
     .subtotal {
       font-size: 22px;
       font-weight: bold;
       margin-top: 14px;
       text-align: right;
     }
+
     .top-actions {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -106,71 +150,197 @@
 <body>
 
 <h1>Eve & Lilly Staff</h1>
+
 <div id="message"></div>
 
 <section id="loginScreen" class="card">
   <h2>Staff Login</h2>
+
   <label>Staff Name / ID</label>
-  <input id="staffId" placeholder="Example: STAFF 01">
-  <button class="primary" onclick="loginStaff()">LOGIN</button>
+
+  <input
+    id="staffId"
+    placeholder="Example: STAFF 01">
+
+  <button
+    class="primary"
+    onclick="loginStaff()">
+    LOGIN
+  </button>
 </section>
+
 
 <section id="homeScreen" class="card hidden">
-  <h2 id="welcomeText">Staff Home</h2>
+
+  <h2 id="welcomeText">
+    Staff Home
+  </h2>
+
   <div class="menu">
-    <button class="primary" onclick="openPriceScanner()">PRICE SCANNER</button>
-    <button class="green" onclick="showCreateCart()">OPEN NEW CART</button>
-    <button class="light" onclick="showJoinCart()">JOIN EXISTING CART</button>
+
+    <button
+      class="primary"
+      onclick="openPriceScanner()">
+      PRICE SCANNER
+    </button>
+
+    <button
+      class="green"
+      onclick="showCreateCart()">
+      OPEN NEW CART
+    </button>
+
+    <button
+      class="light"
+      onclick="showJoinCart()">
+      JOIN EXISTING CART
+    </button>
+
   </div>
-  <button class="danger" onclick="logoutStaff()">LOGOUT</button>
+
 </section>
+
 
 <section id="createCartScreen" class="card hidden">
+
   <h2>Open New Cart</h2>
+
   <label>Customer Name</label>
-  <input id="customerName" placeholder="Customer name">
+
+  <input
+    id="customerName"
+    placeholder="Customer name">
+
   <label>Mobile Number</label>
-  <input id="mobileNumber" placeholder="Optional">
-  <button class="green" onclick="createCart()">CREATE & OPEN CART</button>
-  <button class="light" onclick="goHome()">BACK</button>
+
+  <input
+    id="mobileNumber"
+    placeholder="Optional">
+
+  <button
+    class="green"
+    onclick="createCart()">
+    CREATE & OPEN CART
+  </button>
+
+  <button
+    class="light"
+    onclick="goHome()">
+    BACK
+  </button>
+
 </section>
+
 
 <section id="joinCartScreen" class="card hidden">
+
   <h2>Active Carts</h2>
-  <div id="activeCarts">Loading...</div>
-  <button class="light" onclick="goHome()">BACK</button>
+
+  <div id="activeCarts">
+    Loading...
+  </div>
+
+  <button
+    class="light"
+    onclick="goHome()">
+    BACK
+  </button>
+
 </section>
+
 
 <section id="scannerScreen" class="card hidden">
-  <h2 id="scannerTitle">Scanner</h2>
-  <div id="scannerContext" class="small"></div>
-  <button id="startScannerButton" class="primary" onclick="startScanner()">START SCANNER</button>
+
+  <h2 id="scannerTitle">
+    Scanner
+  </h2>
+
+  <div
+    id="scannerContext"
+    class="small">
+  </div>
+
+  <button
+    id="startScannerButton"
+    class="primary"
+    onclick="startScanner()">
+    START SCANNER
+  </button>
+
   <div id="reader"></div>
-  <button class="light" onclick="exitScanner()">BACK</button>
+
+  <button
+    class="light"
+    onclick="exitScanner()">
+    BACK
+  </button>
+
 </section>
+
 
 <section id="productScreen" class="card hidden">
+
   <div id="productResult"></div>
+
 </section>
+
 
 <section id="cartSelectScreen" class="card hidden">
+
   <h2>Add to Which Cart?</h2>
-  <div id="cartChoices">Loading...</div>
-  <button class="light" onclick="cancelCartSelection()">CANCEL</button>
+
+  <div id="cartChoices">
+    Loading...
+  </div>
+
+  <button
+    class="light"
+    onclick="cancelCartSelection()">
+    CANCEL
+  </button>
+
 </section>
+
 
 <section id="cartScreen" class="card hidden">
-  <h2 id="cartHeading">Customer Cart</h2>
-  <div id="cartInfo" class="small"></div>
-  <div class="top-actions">
-    <button class="primary" onclick="openInsideCartScanner()">SCAN PRODUCT</button>
-    <button class="light" onclick="goHome()">HOME</button>
+
+  <h2 id="cartHeading">
+    Customer Cart
+  </h2>
+
+  <div
+    id="cartInfo"
+    class="small">
   </div>
+
+  <div class="top-actions">
+
+    <button
+      class="primary"
+      onclick="openInsideCartScanner()">
+      SCAN PRODUCT
+    </button>
+
+    <button
+      class="light"
+      onclick="goHome()">
+      HOME
+    </button>
+
+  </div>
+
   <div id="cartItems"></div>
-  <div id="cartSubtotal" class="subtotal"></div>
+
+  <div
+    id="cartSubtotal"
+    class="subtotal">
+  </div>
+
 </section>
 
+
 <script>
+
 const backendUrl =
   "https://script.google.com/macros/s/AKfycbwdyg1xMB1UJWdCAe8jJrlKYLd5RnmLF8NzUgKiGhU4szU1g8EdNmTww7c-hLB1Xd0p7A/exec";
 
@@ -181,379 +351,1191 @@ let currentCartId = "";
 let scannedProduct = null;
 let returnScreen = "homeScreen";
 
+
 function showOnly(id) {
+
   [
-    "loginScreen", "homeScreen", "createCartScreen",
-    "joinCartScreen", "scannerScreen", "productScreen",
-    "cartSelectScreen", "cartScreen"
-  ].forEach(x => document.getElementById(x).classList.add("hidden"));
-  document.getElementById(id).classList.remove("hidden");
+    "loginScreen",
+    "homeScreen",
+    "createCartScreen",
+    "joinCartScreen",
+    "scannerScreen",
+    "productScreen",
+    "cartSelectScreen",
+    "cartScreen"
+  ].forEach(
+    x =>
+      document
+        .getElementById(x)
+        .classList
+        .add("hidden")
+  );
+
+  document
+    .getElementById(id)
+    .classList
+    .remove("hidden");
+
 }
+
 
 function message(text, error=false) {
-  const box = document.getElementById("message");
-  box.textContent = text || "";
-  box.style.color = error ? "red" : "#17743b";
+
+  const box =
+    document.getElementById(
+      "message"
+    );
+
+  box.textContent =
+    text || "";
+
+  box.style.color =
+    error
+      ? "red"
+      : "#17743b";
+
 }
+
 
 function loginStaff() {
-  const id = document.getElementById("staffId").value.trim();
-  if (!id) return message("Enter Staff Name / ID.", true);
+
+  const id =
+    document
+      .getElementById(
+        "staffId"
+      )
+      .value
+      .trim();
+
+  if (!id) {
+
+    return message(
+      "Enter Staff Name / ID.",
+      true
+    );
+
+  }
+
   loggedStaff = id;
-  document.getElementById("welcomeText").textContent = "Welcome, " + loggedStaff;
+
+  document
+    .getElementById(
+      "welcomeText"
+    )
+    .textContent =
+      "Welcome, " +
+      loggedStaff;
+
   message("");
-  showOnly("homeScreen");
+
+  showOnly(
+    "homeScreen"
+  );
+
 }
 
-function logoutStaff() {
-  loggedStaff = "";
-  currentCartId = "";
-  scannedProduct = null;
-  document.getElementById("staffId").value = "";
-  showOnly("loginScreen");
-}
 
 function goHome() {
+
   stopScannerQuietly();
+
   currentCartId = "";
+
   message("");
-  showOnly("homeScreen");
+
+  showOnly(
+    "homeScreen"
+  );
+
 }
+
 
 function showCreateCart() {
-  showOnly("createCartScreen");
+
+  showOnly(
+    "createCartScreen"
+  );
+
 }
+
 
 async function createCart() {
-  const customerName = document.getElementById("customerName").value.trim();
-  const mobileNumber = document.getElementById("mobileNumber").value.trim();
 
-  if (!customerName) return message("Customer Name is required.", true);
+  const customerName =
+    document
+      .getElementById(
+        "customerName"
+      )
+      .value
+      .trim();
 
-  message("Creating cart...");
+  const mobileNumber =
+    document
+      .getElementById(
+        "mobileNumber"
+      )
+      .value
+      .trim();
+
+  if (!customerName) {
+
+    return message(
+      "Customer Name is required.",
+      true
+    );
+
+  }
+
+  message(
+    "Creating cart..."
+  );
 
   try {
-    const data = await api({
-      action: "retailCreateCart",
-      customerName,
-      mobileNumber,
-      staff: loggedStaff
-    });
 
-    if (!data.success) throw new Error(data.message || "Could not create cart.");
+    const data =
+      await api({
+        action:
+          "retailCreateCart",
+        customerName:
+          customerName,
+        mobileNumber:
+          mobileNumber,
+        staff:
+          loggedStaff
+      });
 
-    document.getElementById("customerName").value = "";
-    document.getElementById("mobileNumber").value = "";
-    currentCartId = data.cartId;
-    await openCart(currentCartId);
-    message("Cart created.");
+    if (!data.success) {
+
+      throw new Error(
+        data.message ||
+        "Could not create cart."
+      );
+
+    }
+
+    document
+      .getElementById(
+        "customerName"
+      )
+      .value = "";
+
+    document
+      .getElementById(
+        "mobileNumber"
+      )
+      .value = "";
+
+    currentCartId =
+      data.cartId;
+
+    await openCart(
+      currentCartId
+    );
+
+    message(
+      "Cart created."
+    );
+
   } catch (e) {
-    message(e.message, true);
+
+    message(
+      e.message,
+      true
+    );
+
   }
+
 }
+
 
 async function showJoinCart() {
-  showOnly("joinCartScreen");
-  document.getElementById("activeCarts").innerHTML = "Loading active carts...";
+
+  showOnly(
+    "joinCartScreen"
+  );
+
+  document
+    .getElementById(
+      "activeCarts"
+    )
+    .innerHTML =
+      "Loading active carts...";
 
   try {
-    const data = await api({ action: "retailActiveCarts" });
-    if (!data.success) throw new Error(data.message || "Could not load carts.");
-    renderActiveCarts(data.carts || [], "activeCarts", openCart);
+
+    const data =
+      await api({
+        action:
+          "retailActiveCarts"
+      });
+
+    if (!data.success) {
+
+      throw new Error(
+        data.message ||
+        "Could not load carts."
+      );
+
+    }
+
+    renderActiveCarts(
+      data.carts || [],
+      "activeCarts",
+      openCart
+    );
+
   } catch (e) {
-    document.getElementById("activeCarts").textContent = e.message;
+
+    document
+      .getElementById(
+        "activeCarts"
+      )
+      .textContent =
+        e.message;
+
   }
+
 }
 
-function renderActiveCarts(carts, targetId, clickHandler) {
-  const box = document.getElementById(targetId);
+
+function renderActiveCarts(
+  carts,
+  targetId,
+  clickHandler
+) {
+
+  const box =
+    document.getElementById(
+      targetId
+    );
+
   box.innerHTML = "";
 
   if (!carts.length) {
-    box.innerHTML = "<p>No active carts.</p>";
+
+    box.innerHTML =
+      "<p>No active carts.</p>";
+
     return;
+
   }
 
-  carts.forEach(cart => {
-    const btn = document.createElement("button");
-    btn.className = "cart-option";
-    btn.innerHTML =
-      "<strong>" + esc(cart.customerName || "Walk-in Customer") + "</strong>" +
-      "<div class='small'>" +
-      esc(cart.cartId) + " · Created By: " + esc(cart.createdBy) +
-      " · ₹" + Number(cart.subtotal || 0) +
-      "</div>";
-    btn.onclick = () => clickHandler(cart.cartId);
-    box.appendChild(btn);
-  });
-}
+  carts.forEach(
+    cart => {
 
-async function openCart(cartId) {
-  message("Opening cart...");
-  try {
-    const data = await api({ action: "retailCart", cartId });
-    if (!data.success) throw new Error(data.message || "Could not open cart.");
+      const btn =
+        document.createElement(
+          "button"
+        );
 
-    currentCartId = data.cart.cartId;
-    showOnly("cartScreen");
+      btn.className =
+        "cart-option";
 
-    document.getElementById("cartHeading").textContent =
-      data.cart.customerName || "Customer Cart";
+      btn.innerHTML =
+        "<strong>" +
+        esc(
+          cart.customerName ||
+          "Walk-in Customer"
+        ) +
+        "</strong>" +
 
-    document.getElementById("cartInfo").textContent =
-      "Cart: " + data.cart.cartId +
-      " | Created By: " + data.cart.createdBy;
-
-    renderCartItems(data);
-    message("");
-  } catch (e) {
-    message(e.message, true);
-  }
-}
-
-function renderCartItems(data) {
-  const box = document.getElementById("cartItems");
-  box.innerHTML = "";
-
-  const items = data.items || [];
-  if (!items.length) {
-    box.innerHTML = "<p>No products added yet.</p>";
-  } else {
-    items.forEach(item => {
-      const div = document.createElement("div");
-      div.className = "cart-item";
-      div.innerHTML =
-        "<strong>" + esc(item.productName) + "</strong>" +
         "<div class='small'>" +
-        esc(item.sku) +
-        " · Qty: " + Number(item.quantity) +
-        " · Added By: " + esc(item.addedBy) +
-        "</div>" +
-        "<div>₹" + Number(item.lineTotal || 0) + "</div>";
-      box.appendChild(div);
-    });
-  }
 
-  document.getElementById("cartSubtotal").textContent =
-    "Subtotal: ₹" + Number(data.cart.subtotal || 0);
+        esc(
+          cart.cartId
+        ) +
+
+        " · Created By: " +
+
+        esc(
+          cart.createdBy
+        ) +
+
+        " · ₹" +
+
+        Number(
+          cart.subtotal || 0
+        ) +
+
+        "</div>";
+
+      btn.onclick =
+        () =>
+          clickHandler(
+            cart.cartId
+          );
+
+      box.appendChild(
+        btn
+      );
+
+    }
+  );
+
 }
 
-function openPriceScanner() {
-  scannerMode = "PRICE";
-  currentCartId = "";
-  returnScreen = "homeScreen";
-  document.getElementById("scannerTitle").textContent = "Price Scanner";
-  document.getElementById("scannerContext").textContent =
-    "Scan to check price. Nothing is added automatically.";
-  showOnly("scannerScreen");
-}
 
-function openInsideCartScanner() {
-  if (!currentCartId) return message("No cart is open.", true);
-  scannerMode = "CART";
-  returnScreen = "cartScreen";
-  document.getElementById("scannerTitle").textContent = "Cart Scanner";
-  document.getElementById("scannerContext").textContent =
-    "Scan to check price, then choose ADD TO CART or CANCEL.";
-  showOnly("scannerScreen");
-}
+async function openCart(
+  cartId
+) {
 
-async function startScanner() {
-  message("Opening camera...");
-  document.getElementById("startScannerButton").disabled = true;
+  message(
+    "Opening cart..."
+  );
 
   try {
-    if (scanner) {
-      try { await scanner.clear(); } catch (_) {}
+
+    const data =
+      await api({
+        action:
+          "retailCart",
+        cartId:
+          cartId
+      });
+
+    if (!data.success) {
+
+      throw new Error(
+        data.message ||
+        "Could not open cart."
+      );
+
     }
 
-    scanner = new Html5Qrcode("reader");
-    const cameras = await Html5Qrcode.getCameras();
+    currentCartId =
+      data.cart.cartId;
 
-    if (!cameras || !cameras.length) throw new Error("No camera found.");
+    showOnly(
+      "cartScreen"
+    );
 
-    const cameraId = cameras[cameras.length - 1].id;
+    document
+      .getElementById(
+        "cartHeading"
+      )
+      .textContent =
+        data.cart.customerName ||
+        "Customer Cart";
 
-    await scanner.start(
-      cameraId,
-      { fps: 10, qrbox: { width: 280, height: 120 } },
-      onScanSuccess
+    document
+      .getElementById(
+        "cartInfo"
+      )
+      .textContent =
+        "Cart: " +
+        data.cart.cartId +
+        " | Created By: " +
+        data.cart.createdBy;
+
+    renderCartItems(
+      data
     );
 
     message("");
+
   } catch (e) {
-    document.getElementById("startScannerButton").disabled = false;
-    message("Camera error: " + e.message, true);
+
+    message(
+      e.message,
+      true
+    );
+
   }
+
 }
 
-async function onScanSuccess(decodedText) {
-  await stopScannerQuietly();
-  message("Looking up product...");
+
+function renderCartItems(
+  data
+) {
+
+  const box =
+    document.getElementById(
+      "cartItems"
+    );
+
+  box.innerHTML = "";
+
+  const items =
+    data.items || [];
+
+  if (!items.length) {
+
+    box.innerHTML =
+      "<p>No products added yet.</p>";
+
+  } else {
+
+    items.forEach(
+      item => {
+
+        const div =
+          document.createElement(
+            "div"
+          );
+
+        div.className =
+          "cart-item";
+
+        div.innerHTML =
+          "<strong>" +
+          esc(
+            item.productName
+          ) +
+          "</strong>" +
+
+          "<div class='small'>" +
+
+          esc(
+            item.sku
+          ) +
+
+          " · Qty: " +
+          Number(
+            item.quantity
+          ) +
+
+          " · Added By: " +
+
+          esc(
+            item.addedBy
+          ) +
+
+          "</div>" +
+
+          "<div>₹" +
+          Number(
+            item.lineTotal || 0
+          ) +
+          "</div>";
+
+        box.appendChild(
+          div
+        );
+
+      }
+    );
+
+  }
+
+  document
+    .getElementById(
+      "cartSubtotal"
+    )
+    .textContent =
+      "Subtotal: ₹" +
+      Number(
+        data.cart.subtotal || 0
+      );
+
+}
+
+
+function openPriceScanner() {
+
+  scannerMode =
+    "PRICE";
+
+  currentCartId =
+    "";
+
+  returnScreen =
+    "homeScreen";
+
+  document
+    .getElementById(
+      "scannerTitle"
+    )
+    .textContent =
+      "Price Scanner";
+
+  document
+    .getElementById(
+      "scannerContext"
+    )
+    .textContent =
+      "Scan to check price. Nothing is added automatically.";
+
+  showOnly(
+    "scannerScreen"
+  );
+
+}
+
+
+function openInsideCartScanner() {
+
+  if (!currentCartId) {
+
+    return message(
+      "No cart is open.",
+      true
+    );
+
+  }
+
+  scannerMode =
+    "CART";
+
+  returnScreen =
+    "cartScreen";
+
+  document
+    .getElementById(
+      "scannerTitle"
+    )
+    .textContent =
+      "Cart Scanner";
+
+  document
+    .getElementById(
+      "scannerContext"
+    )
+    .textContent =
+      "Scan to check price, then choose ADD TO CART or CANCEL.";
+
+  showOnly(
+    "scannerScreen"
+  );
+
+}
+
+
+async function startScanner() {
+
+  message(
+    "Opening camera..."
+  );
+
+  document
+    .getElementById(
+      "startScannerButton"
+    )
+    .disabled = true;
 
   try {
-    const data = await api({
-      action: "retailProduct",
-      identifier: decodedText
-    });
 
-    if (!data.success || !data.found) {
-      throw new Error(data.message || "Product not found.");
+    if (scanner) {
+
+      try {
+        await scanner.clear();
+      } catch (_) {}
+
     }
 
-    scannedProduct = data.product;
-    showProduct(scannedProduct);
+    scanner =
+      new Html5Qrcode(
+        "reader"
+      );
+
+    const cameras =
+      await Html5Qrcode
+        .getCameras();
+
+    if (
+      !cameras ||
+      !cameras.length
+    ) {
+
+      throw new Error(
+        "No camera found."
+      );
+
+    }
+
+    const cameraId =
+      cameras[
+        cameras.length - 1
+      ].id;
+
+    await scanner.start(
+
+      cameraId,
+
+      {
+        fps: 10,
+
+        qrbox: {
+          width: 280,
+          height: 120
+        }
+      },
+
+      onScanSuccess
+
+    );
+
     message("");
+
   } catch (e) {
-    message(e.message, true);
-    showOnly("scannerScreen");
+
+    document
+      .getElementById(
+        "startScannerButton"
+      )
+      .disabled = false;
+
+    message(
+      "Camera error: " +
+      e.message,
+      true
+    );
+
   }
+
 }
 
-function showProduct(product) {
-  showOnly("productScreen");
+
+async function onScanSuccess(
+  decodedText
+) {
+
+  await stopScannerQuietly();
+
+  message(
+    "Looking up product..."
+  );
+
+  try {
+
+    const data =
+      await api({
+        action:
+          "retailProduct",
+        identifier:
+          decodedText
+      });
+
+    if (
+      !data.success ||
+      !data.found
+    ) {
+
+      throw new Error(
+        data.message ||
+        "Product not found."
+      );
+
+    }
+
+    scannedProduct =
+      data.product;
+
+    showProduct(
+      scannedProduct
+    );
+
+    message("");
+
+  } catch (e) {
+
+    message(
+      e.message,
+      true
+    );
+
+    showOnly(
+      "scannerScreen"
+    );
+
+  }
+
+}
+
+
+function showProduct(
+  product
+) {
+
+  showOnly(
+    "productScreen"
+  );
 
   let image = "";
-  if (product.imageReference) {
+
+  if (
+    product.imageReference
+  ) {
+
     image =
       "<img src='https://drive.google.com/thumbnail?id=" +
-      encodeURIComponent(product.imageReference) +
+      encodeURIComponent(
+        product.imageReference
+      ) +
       "&sz=w400' alt='Product'>";
+
   }
 
-  document.getElementById("productResult").innerHTML =
-    "<div class='product'>" +
-    image +
-    "<h2>" + esc(product.productName || product.category || "Product") + "</h2>" +
-    "<div class='price'>₹" + Number(product.rp || 0) + "</div>" +
-    "<div class='meta'>" +
-    "<p><strong>SKU:</strong> " + esc(product.sku) + "</p>" +
-    "<p><strong>Stock:</strong> " + Number(product.currentStock || 0) + "</p>" +
-    "</div>" +
-    "<button class='green' onclick='productAddDecision()'>ADD TO CART</button>" +
-    "<button class='light' onclick='cancelScannedProduct()'>CANCEL</button>" +
-    "</div>";
+  document
+    .getElementById(
+      "productResult"
+    )
+    .innerHTML =
+
+      "<div class='product'>" +
+
+      image +
+
+      "<h2>" +
+      esc(
+        product.productName ||
+        product.category ||
+        "Product"
+      ) +
+      "</h2>" +
+
+      "<div class='price'>₹" +
+      Number(
+        product.rp || 0
+      ) +
+      "</div>" +
+
+      "<div class='meta'>" +
+
+      "<p><strong>SKU:</strong> " +
+      esc(
+        product.sku
+      ) +
+      "</p>" +
+
+      "<p><strong>Stock:</strong> " +
+      Number(
+        product.currentStock || 0
+      ) +
+      "</p>" +
+
+      "</div>" +
+
+      "<button class='green' onclick='productAddDecision()'>" +
+      "ADD TO CART" +
+      "</button>" +
+
+      "<button class='light' onclick='cancelScannedProduct()'>" +
+      "CANCEL" +
+      "</button>" +
+
+      "</div>";
+
 }
+
 
 async function productAddDecision() {
-  if (!scannedProduct) return;
 
-  if (scannerMode === "CART") {
-    await addProductToCart(currentCartId);
+  if (!scannedProduct) {
     return;
   }
 
-  showOnly("cartSelectScreen");
-  document.getElementById("cartChoices").innerHTML = "Loading active carts...";
+  if (
+    scannerMode ===
+    "CART"
+  ) {
 
-  try {
-    const data = await api({ action: "retailActiveCarts" });
-    if (!data.success) throw new Error(data.message || "Could not load carts.");
-    renderActiveCarts(data.carts || [], "cartChoices", addProductToCart);
-  } catch (e) {
-    document.getElementById("cartChoices").textContent = e.message;
+    await addProductToCart(
+      currentCartId
+    );
+
+    return;
+
   }
-}
 
-async function addProductToCart(cartId) {
-  if (!scannedProduct) return;
+  showOnly(
+    "cartSelectScreen"
+  );
 
-  message("Adding product...");
+  document
+    .getElementById(
+      "cartChoices"
+    )
+    .innerHTML =
+      "Loading active carts...";
 
   try {
-    const data = await api({
-      action: "retailAddItem",
-      cartId,
-      identifier: scannedProduct.sku,
-      quantity: 1,
-      staff: loggedStaff
-    });
 
-    if (!data.success) throw new Error(data.message || "Could not add product.");
+    const data =
+      await api({
+        action:
+          "retailActiveCarts"
+      });
 
-    const addedName = scannedProduct.productName || scannedProduct.sku;
-    scannedProduct = null;
-    currentCartId = cartId;
+    if (!data.success) {
 
-    message(addedName + " added to cart.");
+      throw new Error(
+        data.message ||
+        "Could not load carts."
+      );
 
-    if (scannerMode === "CART") {
-      await openCart(cartId);
-    } else {
-      showOnly("homeScreen");
     }
+
+    renderActiveCarts(
+      data.carts || [],
+      "cartChoices",
+      addProductToCart
+    );
+
   } catch (e) {
-    message(e.message, true);
+
+    document
+      .getElementById(
+        "cartChoices"
+      )
+      .textContent =
+        e.message;
+
   }
+
 }
+
+
+async function addProductToCart(
+  cartId
+) {
+
+  if (!scannedProduct) {
+    return;
+  }
+
+  message(
+    "Adding product..."
+  );
+
+  try {
+
+    const data =
+      await api({
+        action:
+          "retailAddItem",
+        cartId:
+          cartId,
+        identifier:
+          scannedProduct.sku,
+        quantity:
+          1,
+        staff:
+          loggedStaff
+      });
+
+    if (!data.success) {
+
+      throw new Error(
+        data.message ||
+        "Could not add product."
+      );
+
+    }
+
+    const addedName =
+      scannedProduct.productName ||
+      scannedProduct.sku;
+
+    scannedProduct =
+      null;
+
+    currentCartId =
+      cartId;
+
+    message(
+      addedName +
+      " added to cart."
+    );
+
+    if (
+      scannerMode ===
+      "CART"
+    ) {
+
+      await openCart(
+        cartId
+      );
+
+    } else {
+
+      showOnly(
+        "homeScreen"
+      );
+
+    }
+
+  } catch (e) {
+
+    message(
+      e.message,
+      true
+    );
+
+  }
+
+}
+
 
 function cancelScannedProduct() {
-  scannedProduct = null;
 
-  if (scannerMode === "CART") {
-    openCart(currentCartId);
+  scannedProduct =
+    null;
+
+  if (
+    scannerMode ===
+    "CART"
+  ) {
+
+    openCart(
+      currentCartId
+    );
+
   } else {
-    showOnly("homeScreen");
+
+    showOnly(
+      "homeScreen"
+    );
+
   }
+
 }
+
 
 function cancelCartSelection() {
+
   if (scannedProduct) {
-    showProduct(scannedProduct);
+
+    showProduct(
+      scannedProduct
+    );
+
   } else {
-    showOnly("homeScreen");
+
+    showOnly(
+      "homeScreen"
+    );
+
   }
+
 }
+
 
 async function exitScanner() {
+
   await stopScannerQuietly();
 
-  if (returnScreen === "cartScreen" && currentCartId) {
-    openCart(currentCartId);
+  if (
+    returnScreen ===
+      "cartScreen" &&
+    currentCartId
+  ) {
+
+    openCart(
+      currentCartId
+    );
+
   } else {
-    showOnly("homeScreen");
+
+    showOnly(
+      "homeScreen"
+    );
+
   }
+
 }
 
+
 async function stopScannerQuietly() {
+
   if (!scanner) {
-    document.getElementById("startScannerButton").disabled = false;
+
+    document
+      .getElementById(
+        "startScannerButton"
+      )
+      .disabled = false;
+
     return;
+
   }
 
   try {
-    if (scanner.isScanning) await scanner.stop();
+
+    if (
+      scanner.isScanning
+    ) {
+
+      await scanner.stop();
+
+    }
+
   } catch (_) {}
 
-  try { await scanner.clear(); } catch (_) {}
+  try {
+    await scanner.clear();
+  } catch (_) {}
 
   scanner = null;
-  document.getElementById("reader").innerHTML = "";
-  document.getElementById("startScannerButton").disabled = false;
+
+  document
+    .getElementById(
+      "reader"
+    )
+    .innerHTML = "";
+
+  document
+    .getElementById(
+      "startScannerButton"
+    )
+    .disabled = false;
+
 }
 
-async function api(params) {
-  const query = new URLSearchParams(params);
-  const response = await fetch(backendUrl + "?" + query.toString(), {
-    method: "GET",
-    cache: "no-store"
-  });
 
-  if (!response.ok) {
-    throw new Error("Backend connection failed.");
-  }
+/* =========================================================
+   JSONP API
+   This replaces fetch() and avoids the GitHub -> Apps Script
+   redirect/CORS problem.
+   ========================================================= */
 
-  return response.json();
+function api(params) {
+
+  return new Promise(
+    function(resolve, reject) {
+
+      const callbackName =
+        "__ismb_cb_" +
+        Date.now() +
+        "_" +
+        Math.floor(
+          Math.random() *
+          100000
+        );
+
+      const script =
+        document.createElement(
+          "script"
+        );
+
+      const timeout =
+        setTimeout(
+          function() {
+
+            cleanup();
+
+            reject(
+              new Error(
+                "Backend connection timed out."
+              )
+            );
+
+          },
+          15000
+        );
+
+      function cleanup() {
+
+        clearTimeout(
+          timeout
+        );
+
+        try {
+          delete window[
+            callbackName
+          ];
+        } catch (_) {}
+
+        if (
+          script.parentNode
+        ) {
+
+          script.parentNode
+            .removeChild(
+              script
+            );
+
+        }
+
+      }
+
+      window[
+        callbackName
+      ] =
+        function(data) {
+
+          cleanup();
+
+          resolve(
+            data
+          );
+
+        };
+
+      const query =
+        new URLSearchParams(
+          params
+        );
+
+      query.set(
+        "callback",
+        callbackName
+      );
+
+      query.set(
+        "_",
+        Date.now()
+      );
+
+      script.src =
+        backendUrl +
+        "?" +
+        query.toString();
+
+      script.onerror =
+        function() {
+
+          cleanup();
+
+          reject(
+            new Error(
+              "Could not connect to backend."
+            )
+          );
+
+        };
+
+      document.body
+        .appendChild(
+          script
+        );
+
+    }
+  );
+
 }
+
 
 function esc(value) {
-  return String(value == null ? "" : value)
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
+
+  return String(
+    value == null
+      ? ""
+      : value
+  )
+    .replace(
+      /&/g,
+      "&amp;"
+    )
+    .replace(
+      /</g,
+      "&lt;"
+    )
+    .replace(
+      />/g,
+      "&gt;"
+    )
+    .replace(
+      /"/g,
+      "&quot;"
+    )
+    .replace(
+      /'/g,
+      "&#039;"
+    );
+
 }
+
 </script>
 
 </body>
